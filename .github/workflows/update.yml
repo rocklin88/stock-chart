@@ -1,0 +1,23 @@
+name: update
+on:
+  schedule:
+    - cron: "30 6 * * 1-5"   # 台灣時間週一至五 14:30
+  workflow_dispatch:          # 可手動按鈕執行
+permissions:
+  contents: write
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements.txt
+      - run: python stock_kd_chart.py
+      - run: |
+          git config user.name "bot"
+          git config user.email "bot@example.com"
+          git add -A
+          git commit -m "daily update" || echo "no changes"
+          git push
